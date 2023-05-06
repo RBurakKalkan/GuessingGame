@@ -1,0 +1,12 @@
+﻿.header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 150px; /* adjust the width as per your requirement */
+    height: 100vh; /* set height to full viewport height */
+    /*background-color: #f2f2f2;*/
+    text-align: center;
+    padding-top: 73px; /* add padding to vertically center the text */
+    font-size: 1.5em; /* adjust the font size as per your requirement */
+    font-weight: bold;
+}

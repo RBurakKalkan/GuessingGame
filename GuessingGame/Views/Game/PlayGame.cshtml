@@ -1,0 +1,181 @@
+﻿@model GuessingGame.Models.ViewModels.PlayGameViewModel
+
+<div class="container">
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <h1 id="welcomeHeader">Welcome, @Model.PlayerName!</h1>
+            <form id="makeGuessForm">
+                <div class="col-8">
+                    <label>Type Digits</label>
+                    <div class="row justify-content-center">
+                        <div class="col-3">
+                            <input class="form-control text-center" type="text" maxlength="1" id="input1" required>
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="col-3">
+                            <input class="form-control text-center" type="text" maxlength="1" id="input2" required>
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="col-3">
+                            <input class="form-control text-center" type="text" maxlength="1" id="input3" required>
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="col-3">
+                            <input class="form-control text-center" type="text" maxlength="1" id="input4" required>
+                            <span class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-center">
+                        <button type="submit" id="makeGuess" class="btn btn-primary mt-2">Make Guess</button>
+                    </div>
+                </div>
+            </form>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <h5 id="lastGuessResults">Last Guess</h5>
+                </div>
+                <div class="col-6 p-md-3">
+                    <h6 class="text-center">Matching Digits</h6>
+                    <h5 class="text-center" id="matchingDigits"></h5>
+                </div>
+                <div class="col-6 p-md-3">
+                    <h6 class="text-center">Matching Places</h6>
+                    <h5 class="text-center" id="matchingPlaces"></h5>
+                </div>
+            </div>
+            <h5 id="guessLog" class="p-md-3"></h5>
+            <div class="chat-container mt-2">
+                <ul id="groupItem" class="list-group list-group-flush">
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="header">
+    <h1>Trials Left</h1>
+    <h2 id="hTrialLeft"></h2>
+</div>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<script>
+
+
+
+    // Get all input elements
+    const inputs = document.querySelectorAll('input');
+
+
+    // Add event listener to each input element
+    inputs.forEach((input, index) => {
+        input.addEventListener('focus', event => {
+            // Select entire value if input has a value
+            if (input.value) {
+                input.select();
+            }
+        });
+
+        input.addEventListener('input', event => {
+            // Get the next input element
+            const nextInput = inputs[index + 1];
+
+            // Move focus to the next input element if it exists
+            if (nextInput) {
+                nextInput.focus();
+            }
+        });
+    });
+    function isDigit(value) {
+        return /^\d$/.test(value) && parseInt(value) >= 1 && parseInt(value) <= 9;
+    }
+    function inputsAreUnique() {
+        var values = [];
+        var isValid = true;
+        $("#makeGuessForm input").each(function () {
+            var value = $(this).val();
+            if (!/^\d$/.test(value)) {
+                isValid = false;
+                return false;
+            }
+            if (values.indexOf(value) !== -1) {
+                isValid = false;
+                return false;
+            }
+            values.push(value);
+        });
+        return isValid;
+    }
+    function continueGame(logs, trialsLeft, matchingDigits, matchingPlaces, isOver, guessNumber) {
+        if (logs !== "") {
+            logs = logs.replace(/&#xA;/g, '\n');
+        }
+        if (isOver) {
+            window.location.href = "/Game/FinishGame?gameId=" + @Model.GameId + "&Name=" + encodeURIComponent("@Model.PlayerName");
+        }
+
+        let lines = logs.split("\n");
+        var myList = document.getElementById("groupItem");
+        if (lines !== "") {
+            myList.innerHTML = '';
+            var a = lines.length - 1;
+            for (let i = 0; i < lines.length - 1; i++) {
+                var li = document.createElement("li");
+                li.className = "list-group-item";
+                li.innerText = a-- + ". guess result is : " + lines[i];
+                myList.appendChild(li);
+                $("#guessLog").text("Previous Guess Log");
+            }
+        }
+        $("#hTrialLeft").text(trialsLeft);
+        $("#matchingDigits").text(matchingDigits);
+        $("#matchingPlaces").text(matchingPlaces);
+        var message = guessNumber === 0 ? "Last Guess" : "Your last guess number was : " + guessNumber;
+        $("#lastGuessResults").text(message);
+    }
+    $(document).ready(function () {
+        var isOver = Boolean(@Model.IsOver.ToString().ToLower());
+        continueGame("@Model.Logs", "@Model.TrialsLeft", "@Model.MatchingDigits", "@Model.MatchingPlaces", isOver, @Model.GuessNumber);
+
+    });
+    $("#makeGuessForm").submit(function (event) {
+        // Prevent the form from submitting normally
+        event.preventDefault();
+
+        // Check if all the input values are unique
+        if (!inputsAreUnique()) {
+            alert("Please enter four unique digits between 1 and 9");
+
+            return;
+        }
+
+
+        // Construct the guess number from the input fields
+        var guessNumber = parseInt($("#input1").val() + $("#input2").val() + $("#input3").val() + $("#input4").val());
+        // Clear inputs
+        $("#input1").val("");
+        $("#input2").val("");
+        $("#input3").val("");
+        $("#input4").val("");
+
+        // Focus on the first input
+        $("#input1").focus();
+
+        // Send the form data to the server via AJAX
+        $.ajax({
+            type: "POST",
+            url: "/Game/MakeGuess",
+            data: {
+                gameId: @Model.GameId,
+                playerId: @Model.PlayerId,
+                guessNumber: guessNumber
+            },
+            success: function (data) {
+                continueGame(data.logs, data.trialsLeft, data.matchingDigits, data.matchingPlaces, data.isOver, data.guessNumber);
+            }
+        });
+        // Enable the button
+    });
+</script>

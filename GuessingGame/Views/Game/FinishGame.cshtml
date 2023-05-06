@@ -1,0 +1,62 @@
+﻿@model GuessingGame.Models.ViewModels.FinishGameViewModel
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Over...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <table align="center" style="max-width: 500px; width: 100%; margin: auto;">
+        <tr>
+            <td colspan="2" style="text-align: center; font-size: 24px;">
+                Game Over...
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">
+                @if (Model.IsWon)
+                {
+                    <div>Congratulations, @Model.PlayerName</div>
+                }
+                else
+                {
+                    <div>Sorry, @Model.PlayerName</div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">
+                @if (Model.IsWon)
+                {
+                    <div>You win!!!!!</div>
+                }
+                else
+                {
+                    <div>You Lose... Try Again.</div>
+                }
+            </td>
+        </tr>
+        
+            <td style="text-align: center; font-weight: bold;">
+               The number was @Model.SecretNumber
+            </td>
+        
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <button id="newGameBtn" class="btn btn-primary mt-2" onClick="goToHome()">New Game</button>
+                <button id="ranksBtn" class="btn btn-primary mt-2" onClick="goToLeaderboard()">Ranks</button>
+            </td>
+        </tr>
+    </table>
+</body>
+<script>
+    function goToHome() {
+        window.location.href = "/Home/Index";
+    }
+</script>
+<script>
+    function goToLeaderboard() {
+        window.location.href = "/Game/Leaderboard";
+    }
+</script>
+</html>

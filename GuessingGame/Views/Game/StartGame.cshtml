@@ -1,0 +1,72 @@
+﻿<div class="d-flex flex-column align-items-center text-center">
+
+    <form id="startGameForm" method="get" action="/Game/StartGame">
+        <div class="form-group">
+            <label for="playerName">Enter your Player Name:</label>
+            <input type="text" class="form-control" id="playerName" name="playerName" required />
+            <span id="playerNameError" class="text-danger"></span>
+        </div>
+        <button type="submit" id="startGameButton" class="btn btn-primary mt-3">Play!</button>
+    </form>
+    <div class="p-xl-5">
+        <label>Or Login with:</label>
+    </div>
+    <div class="p-xl-1">
+
+        <button onclick="fbLogin()" class="btn btn-primary" style="background-color: #3b5998; border-color: #3b5998;">
+            <i class="fa fa-facebook"></i>
+        </button>
+    </div>
+
+
+
+
+
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#startGameForm').submit(function () {
+            // Disable the button
+            $('#startGameButton').prop('disabled', true);
+        });
+
+        $(document).ajaxStop(function () {
+            // Enable the button
+            $('#startGameButton').prop('disabled', false);
+        });
+    });
+
+    function fbLogin() {
+        FB.login(function (response) {
+            if (response.authResponse) {
+                console.log('Welcome! Fetching your information.... ');
+                FB.api('/me', function (response) {
+                    var playerName = response.name;
+                    window.location.href = "/Game/StartGame?playerName=" + playerName.substring(0, playerName.indexOf(" "));
+                });
+            } else {
+                console.log('User cancelled login or did not fully authorize.');
+            }
+        }, { scope: 'email' });
+    } window.fbAsyncInit = function () {
+        FB.init({
+            appId: '277364257959364',
+            cookie: true,
+            xfbml: true,
+            version: 'v12.0'
+        });
+
+        FB.AppEvents.logPageView();
+    };
+
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) { return; }
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+</script>

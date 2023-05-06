@@ -1,0 +1,41 @@
+﻿@model GuessingGame.Models.ViewModels.PlayerRankViewModel
+
+<style>
+    table {
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    th {
+        background-color: #ccc;
+    }
+</style>
+
+<table>
+    <thead>
+        <tr>
+            <th style="border-left: solid 1px black; border-top: solid 1px black; border-bottom: solid 1px black; text-align:center">Name</th>
+            <th style="border-top: solid 1px black; border-bottom: solid 1px black;text-align:center">Total Guesses</th>
+            <th style="border-top: solid 1px black; border-bottom: solid 1px black;text-align:center">Total Wins</th>
+            <th style="border-top: solid 1px black; border-bottom: solid 1px black;text-align:center">Total Games</th>
+            <th style="border-right: solid 1px black; border-top: solid 1px black; border-bottom: solid 1px black;text-align:center">Success Rate</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var player in Model.Players)
+        {
+            <tr>
+                <td style="border-left: solid 1px black; border-top: solid 1px black; border-bottom: solid 1px black;text-align:center">@player.Name</td>
+                <td style="border-top: solid 1px black; border-bottom: solid 1px black;text-align:center">@player.TotalGuess</td>
+                <td style="border-top: solid 1px black; border-bottom: solid 1px black;text-align:center">@player.TotalWin</td>
+                <td style="border-top: solid 1px black; border-bottom: solid 1px black;text-align:center">@player.TotalGame</td>
+                <td style="border-right: solid 1px black; border-top: solid 1px black; border-bottom: solid 1px black;text-align:center">@player.SuccessRate</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

@@ -7,7 +7,7 @@ namespace GuessingGame.Services
         //Game
         Task<Game> StartNewGameAsync(int playerId);//new SecretNumber will be generated.
         Task<Game> GetGameByIdAsync(int gameId);
-        Task<Game> GetGameByPlayerIdAsync(int playerId);
+        Task<Game?> GetGameByPlayerIdAsync(int playerId);
 
         ////Player
         Task<Player> CreatePlayerIfNotExistAsync(string? playerName);
@@ -16,6 +16,6 @@ namespace GuessingGame.Services
 
         ////Guess
         Task<Guess> MakeGuessAsync(int gameId, int playerId, int GuessNumber); // GuessNumber will be compared to SecretNumber according to the GameRules.
-        Task<Guess> GetLastGuessAsync(int playerId, int currentGameId);
+        Task<Guess?> GetLastGuessAsync(int playerId, int currentGameId);
     }
 }

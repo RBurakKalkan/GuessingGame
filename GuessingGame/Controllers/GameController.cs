@@ -105,7 +105,7 @@ public class GameController : Controller
             SecretNumber = game.SecretNumber
         };
 
-        return View(model);
+        return View("FinishGame", model);
     }
     [HttpGet]
     public async Task<IActionResult> Leaderboard()

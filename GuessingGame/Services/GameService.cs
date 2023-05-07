@@ -123,15 +123,16 @@ namespace GuessingGame.Services
         {
             // Get players who has more than 3 finished games
             var players = await _context.Players
-                .Where(p => p.TotalGame > 3)
+                .Where(p => p.TotalGame >= 3)
                 .ToListAsync();
 
             // Calculate success rate for each player
             foreach (var player in players)
             {
-                player.SuccessRate = player.TotalGame > 3 ? (double)player.TotalWin / player.TotalGame : 0;
+                player.SuccessRate = player.TotalGame >= 3 ? (double)player.TotalWin / player.TotalGame : 0;
+                _context.Players.Update(player);
             }
-
+            await _context.SaveChangesAsync();
             // Sort players by success rate and total guesses
             players = players.OrderByDescending(p => p.SuccessRate)
                              .ThenBy(p => p.TotalGuess)
@@ -245,7 +246,7 @@ namespace GuessingGame.Services
 
             return guess;
         }
-        public async Task<Guess> GetLastGuessAsync(int playerId, int currentGameId)
+        public async Task<Guess?> GetLastGuessAsync(int playerId, int currentGameId)
         {
             var lastGuess = await _context.Guess
                     .Where(g => g.PlayerId == playerId && g.GameId == currentGameId)
